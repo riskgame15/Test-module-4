@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm/Sửa Khuyến Mãi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Modal Form Thêm/Sửa Khuyến Mãi -->
+<div class="modal fade" id="promotionFormModal" tabindex="-1" aria-labelledby="form-title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="form-title">Thêm khuyến mãi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="promotionForm">
+                    <input type="hidden" id="promotionId">
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Tiêu đề</label>
+                        <input type="text" id="title" class="form-control" placeholder="Nhập tiêu đề khuyến mãi" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Ngày bắt đầu</label>
+                        <input type="date" id="startDate" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">Ngày kết thúc</label>
+                        <input type="date" id="endDate" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="discount" class="form-label">Mức giảm (%)</label>
+                        <input type="number" id="discount" class="form-control" placeholder="Nhập mức giảm giá" min="0" max="100" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="details" class="form-label">Chi tiết</label>
+                        <textarea id="details" class="form-control" rows="3" placeholder="Nhập chi tiết khuyến mãi" required></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success me-2">Lưu</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/promotion.js"></script>
+
+<script>
+    // Hiển thị modal form khi tải trang (để test trực tiếp form này)
+    $(document).ready(function () {
+        var myModal = new bootstrap.Modal(document.getElementById('promotionFormModal'));
+        myModal.show();
+    });
+</script>
+<script src="promotion.js"></script>
+</body>
+</html>
