@@ -1,134 +1,112 @@
 $(document).ready(function() {
     loadPromotions();
-});
 
-function loadPromotions() {
-    $.ajax({
-        url: "/api/promotions",
-        type: "GET",
-        success: function(data) {
-
-            let rows = '';
-            data.forEach(promotion => {
-                rows += `
-                    <tr>
-                        <td>${promotion.title}</td>
-                        <td>${promotion.startDate.replace('T', ' ')}</td>
-                        <td>${promotion.endDate.replace('T', ' ')}</td>
-                        <td>${promotion.discount}%</td>
-                        <td>${promotion.details}</td>
-                        <td>
-                            <button onclick="editPromotion(${promotion.id})">Sửa</button>
-                            <button onclick="deletePromotion(${promotion.id})">Xóa</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            $("#promotionTableBody").html(rows);
-        }
-    });
-}
-
-
-function showAddForm() {
-    $("#formTitle").text("Thêm khuyến mãi");
-    $("#promotionId").val('');
-    $("#title").val('');
-    $("#startDate").val('');
-    $("#endDate").val('');
-    $("#discount").val('');
-    $("#details").val('');
-    $("#promotionForm").show();
-}
-
-function hideForm() {
-    $("#promotionForm").hide();
-}
-
-function savePromotion() {
-    let id = $("#promotionId").val();
-    let promotion = {
-        title: $("#title").val(),
-        startDate: $("#startDate").val(),
-        endDate: $("#endDate").val(),
-        discount: $("#discount").val(),
-        details: $("#details").val()
-    };
-
-    let url = "/api/promotions";
-    let method = "POST";
-    if (id) {
-        url += `/${id}`;
-        method = "PUT";
-    }
-
-    $.ajax({
-        url: url,
-        type: method,
-        contentType: "application/json",
-        data: JSON.stringify(promotion),
-        success: function() {
-            loadPromotions();
-            hideForm();
-        }
-    });
-}
-
-function editPromotion(id) {
-    $.ajax({
-        url: `/api/promotions/${id}`,
-        type: "GET",
-        success: function(promotion) {
-            $("#formTitle").text("Chỉnh sửa khuyến mãi");
-            $("#promotionId").val(promotion.id);
-            $("#title").val(promotion.title);
-            $("#startDate").val(promotion.startDate);
-            $("#endDate").val(promotion.endDate);
-            $("#discount").val(promotion.discount);
-            $("#details").val(promotion.details);
-            $("#promotionForm").show();
-        }
-    });
-}
-
-function deletePromotion(id) {
-    if (confirm("Bạn có chắc muốn xoá khuyến mãi này không?")) {
+    function loadPromotions() {
         $.ajax({
-            url: `/api/promotions/${id}`,
-            type: "DELETE",
-            success: function() {
-                loadPromotions();
+            url: "http://localhost:8080/api/promotions",
+            type: "GET",
+            success: function(data) {
+                let rows = '';
+                data.forEach(promotion => {
+                    rows += `
+                        <tr>
+                            <td>${promotion.title}</td>
+                            <td>${promotion.startDate.replace('T', ' ')}</td>
+                            <td>${promotion.endDate.replace('T', ' ')}</td>
+                            <td>${promotion.discount}%</td>
+                            <td>${promotion.details}</td>
+                            <td>
+                                <button class="btn btn-warning" onclick="editPromotion(${promotion.id})">Sửa</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" onclick="deletePromotion(${promotion.id})">Xóa</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                $("#promotionTableBody").html(rows);
             }
         });
     }
-}
 
-function searchPromotion() {
-    let keyword = $("#searchInput").val();
-    $.ajax({
-        url: `/api/promotions/search?keyword=${keyword}`,
-        type: "GET",
-        success: function(data) {
-            let rows = '';
-            data.forEach(promotion => {
-                rows += `
-                    <tr>
-                        <td>${promotion.title}</td>
-                        <td>${promotion.startDate.replace('T', ' ')}</td>
-                        <td>${promotion.endDate.replace('T', ' ')}</td>
-                        <td>${promotion.discount}%</td>
-                        <td>${promotion.details}</td>
-                        <td>
-                            <button onclick="editPromotion(${promotion.id})">Sửa</button>
-                            <button onclick="deletePromotion(${promotion.id})">Xóa</button>
-                        </td>
-                    </tr>
-                `;
+    window.searchPromotion = function() {
+        const keyword = $("#searchKeyword").val();
+        $.ajax({
+            url: "/api/promotions/search",
+            type: "GET",
+            data: { keyword: keyword },
+            success: function(data) {
+                let rows = '';
+                data.forEach(promotion => {
+                    rows += `
+                        <tr>
+                            <td>${promotion.title}</td>
+                            <td>${promotion.startDate.replace('T', ' ')}</td>
+                            <td>${promotion.endDate.replace('T', ' ')}</td>
+                            <td>${promotion.discount}%</td>
+                            <td>${promotion.details}</td>
+                            <td>
+                                <button class="btn btn-warning" onclick="editPromotion(${promotion.id})">Sửa</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" onclick="deletePromotion(${promotion.id})">Xóa</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                $("#promotionTableBody").html(rows);
+            }
+        });
+    };
+
+
+    window.showAddForm = function() {
+        $.ajax({
+            url: "/path/to/your/addForm.html",  // Cập nhật đường dẫn chính xác đến form
+            type: "GET",
+            success: function(response) {
+                $("#promotionFormContainer").html(response);
+                $("#promotionFormModal").modal('show');
+            }
+        });
+    };
+
+
+    window.editPromotion = function(id) {
+        $.ajax({
+            url: `/api/promotions/${id}`,
+            type: "GET",
+            success: function(promotion) {
+                // Chèn dữ liệu vào form sửa
+                $.ajax({
+                    url: "/path/to/your/editForm.html", // Cập nhật đường dẫn chính xác đến form sửa
+                    type: "GET",
+                    success: function(response) {
+                        $("#promotionFormContainer").html(response);
+                        $("#promotionTitle").val(promotion.title);
+                        $("#promotionStartDate").val(promotion.startDate);
+                        $("#promotionEndDate").val(promotion.endDate);
+                        $("#promotionDiscount").val(promotion.discount);
+                        $("#promotionDetails").val(promotion.details);
+                        $("#promotionId").val(promotion.id);
+                        $("#promotionFormModal").modal('show');
+                    }
+                });
+            }
+        });
+    };
+
+
+    window.deletePromotion = function(id) {
+        if (confirm("Bạn có chắc chắn muốn xóa khuyến mãi này?")) {
+            $.ajax({
+                url: `/api/promotions/${id}`,
+                type: "DELETE",
+                success: function() {
+                    alert("Xóa khuyến mãi thành công.");
+                    loadPromotions();
+                }
             });
-            $("#promotionTableBody").html(rows);
         }
-    });
-}
-
-
-
+    };
+});
