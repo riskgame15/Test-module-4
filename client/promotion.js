@@ -28,11 +28,10 @@ $(document).ready(function() {
             }
         });
     }
-
     window.searchPromotion = function() {
         const keyword = $("#searchKeyword").val();
         $.ajax({
-            url: "/api/promotions/search",
+            url: "http://localhost:8080/api/promotions/search",
             type: "GET",
             data: { keyword: keyword },
             success: function(data) {
@@ -59,27 +58,18 @@ $(document).ready(function() {
         });
     };
 
-
     window.showAddForm = function() {
-        $.ajax({
-            url: "/path/to/your/addForm.html",  // Cập nhật đường dẫn chính xác đến form
-            type: "GET",
-            success: function(response) {
-                $("#promotionFormContainer").html(response);
-                $("#promotionFormModal").modal('show');
-            }
-        });
+        window.location.href = "promotion-form.html";
     };
-
 
     window.editPromotion = function(id) {
         $.ajax({
-            url: `/api/promotions/${id}`,
+            url: `http://localhost:8080/api/promotions/${id}`,
             type: "GET",
             success: function(promotion) {
-                // Chèn dữ liệu vào form sửa
+
                 $.ajax({
-                    url: "/path/to/your/editForm.html", // Cập nhật đường dẫn chính xác đến form sửa
+                    url: "/path/to/your/editForm.html",
                     type: "GET",
                     success: function(response) {
                         $("#promotionFormContainer").html(response);
@@ -96,11 +86,10 @@ $(document).ready(function() {
         });
     };
 
-
     window.deletePromotion = function(id) {
         if (confirm("Bạn có chắc chắn muốn xóa khuyến mãi này?")) {
             $.ajax({
-                url: `/api/promotions/${id}`,
+                url: `http://localhost:8080/api/promotions/${id}`,
                 type: "DELETE",
                 success: function() {
                     alert("Xóa khuyến mãi thành công.");
@@ -110,3 +99,126 @@ $(document).ready(function() {
         }
     };
 });
+
+$(document).ready(function() {
+
+    $('#promotionForm').on('submit', function(event) {
+        event.preventDefault();
+        if (validateForm()) {
+            var promotion = {
+                id: $('#promotionId').val(),
+                title: $('#title').val(),
+                startDate: $('#startDate').val(),
+                endDate: $('#endDate').val(),
+                discount: $('#discount').val(),
+                details: $('#details').val()
+            };
+            if (promotion.id) {
+                $.ajax({
+                    url: `/api/promotions/${promotion.id}`,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(promotion),
+                    success: function(response) {
+                        alert('Cập nhật khuyến mãi thành công!');
+                        loadPromotions(); // Reload lại danh sách
+                        $('#promotionFormModal').modal('hide');
+                    },
+                    error: function() {
+                        alert('Lỗi khi cập nhật khuyến mãi!');
+                    }
+                });
+            } else {
+
+                $.ajax({
+                    url: '/api/promotions',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(promotion),
+                    success: function(response) {
+                        alert('Thêm khuyến mãi thành công!');
+                        loadPromotions(); // Reload lại danh sách
+                        $('#promotionFormModal').modal('hide');
+                    },
+                    error: function() {
+                        alert('Lỗi khi thêm khuyến mãi!');
+                    }
+                });
+            }
+        }
+    });
+});
+
+function validateForm() {
+    var valid = true;
+
+    if ($('#title').val() === '') {
+        valid = false;
+        alert('Tiêu đề không được để trống!');
+    }
+
+    var startDate = $('#startDate').val();
+    if (startDate === '') {
+        valid = false;
+        alert('Ngày bắt đầu không được để trống!');
+    } else {
+        var currentDate = new Date().toISOString().split('T')[0];
+        if (startDate <= currentDate) {
+            valid = false;
+            alert('Ngày bắt đầu phải lớn hơn ngày hiện tại!');
+        }
+    }
+    var endDate = $('#endDate').val();
+    if (endDate === '') {
+        valid = false;
+        alert('Ngày kết thúc không được để trống!');
+    } else {
+        if (endDate <= startDate) {
+            valid = false;
+            alert('Ngày kết thúc phải lớn hơn ngày bắt đầu ít nhất 1 ngày!');
+        }
+    }
+    var discount = $('#discount').val();
+    if (discount === '' || discount < 10) {
+        valid = false;
+        alert('Mức giảm giá phải lớn hơn 10,000 VNĐ!');
+    }
+    if ($('#details').val() === '') {
+        valid = false;
+        alert('Chi tiết không được để trống!');
+    }
+    return valid;
+}
+$("#promotionForm").submit(function(event) {
+    event.preventDefault();
+    var promotionData = {
+        title: $("#title").val(),
+        startDate: $("#startDate").val(),
+        endDate: $("#endDate").val(),
+        discount: $("#discount").val(),
+        details: $("#details").val()
+    };
+
+
+    $.ajax({
+        url: "/api/promotions/save",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(promotionData),
+        success: function(response) {
+            alert('Khuyến mãi đã được lưu thành công!');
+            $("#promotionFormModal").modal('hide');
+            loadPromotions();
+        },
+        error: function() {
+            alert('Lỗi khi lưu khuyến mãi.');
+        }
+    });
+});
+
+$("#backToHomePageButton").click(function() {
+    window.location.href = "promotion.html";
+});
+
+
+

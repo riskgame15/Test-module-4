@@ -49,4 +49,14 @@ public class PromotionController {
     public List<Promotion> searchPromotions(@RequestParam String keyword) {
         return promotionService.searchPromotions(keyword);
     }
+
+    @PostMapping("/save")
+    public ResponseEntity<Promotion> savePromotion(@RequestBody Promotion promotion) {
+
+        if (promotion.getTitle() == null || promotion.getTitle().isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        Promotion savedPromotion = promotionService.savePromotion(promotion);
+        return ResponseEntity.ok(savedPromotion);
+    }
 }
